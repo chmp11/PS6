@@ -26,9 +26,11 @@ public class PersonDomainModel {
     protected  LocalDate birthday;
  
 
-    /**
-     * Default constructor.
-     */
+    public PersonDomainModel()
+    {
+    	this.PersonID = UUID.randomUUID();
+    	this.postalCode = 0;
+    }
 
 
     public String getFirstName() {
@@ -38,15 +40,13 @@ public class PersonDomainModel {
     public void setFirstName(String firstName) {
         this.firstName=firstName;
     }
+    public void setPersonID(UUID personID){
+    	this.PersonID=personID;
+    }
     public UUID getPersonID(){
     	return PersonID;
     }
     
-    public void setPersonID(){
-    	this.PersonID=UUID.randomUUID();
-    }
-    
-
     public String getLastName() {
         return lastName;
     }

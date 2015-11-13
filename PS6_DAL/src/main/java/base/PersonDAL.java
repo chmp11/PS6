@@ -64,18 +64,20 @@ public class PersonDAL {
 	public static PersonDomainModel getPerson(UUID perID) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction tx = null;
-		PersonDomainModel perGet = null;		
-		
+		PersonDomainModel perGet = null;
+
 		try {
-			tx = session.beginTransaction();	
-									
-			Query query = session.createQuery("from PersonDomainModel where personId = :id ");
-			query.setParameter("id", perID.toString());
-			
-			List<?> list = query.list();
-			perGet = (PersonDomainModel)list.get(0);
-			
+			tx = session.beginTransaction();
+
+			Query query = session.createQuery("from PersonDomainModel where PersonID = :id ");
+			query.setParameter("id", perID);
+
+			perGet = (PersonDomainModel) query.list().get(0);
+
 			tx.commit();
+
+		} catch (IndexOutOfBoundsException ex) {
+			perGet = null;
 		} catch (HibernateException e) {
 			if (tx != null)
 				tx.rollback();
@@ -89,15 +91,20 @@ public class PersonDAL {
 	public static void deletePerson(UUID perID) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction tx = null;
-		PersonDomainModel perGet = null;		
-		
+		PersonDomainModel perGet = null;
+
 		try {
-			tx = session.beginTransaction();	
-									
+			tx = session.beginTransaction();
+
 			PersonDomainModel per = (PersonDomainModel) session.get(PersonDomainModel.class, perID);
-			session.delete(per);
-		
+			if (per==null)
+			{
+				// Nothing to delete, not found
+				return;
+			}
 			
+			session.delete(per);
+
 			tx.commit();
 		} catch (HibernateException e) {
 			if (tx != null)
@@ -106,7 +113,6 @@ public class PersonDAL {
 		} finally {
 			session.close();
 		}
-
 	}
 
 	public static PersonDomainModel updatePerson(PersonDomainModel per) {
